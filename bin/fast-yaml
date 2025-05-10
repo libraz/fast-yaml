@@ -1,0 +1,4 @@
+#!/usr/bin/env node
+
+// This is a simple wrapper script that calls the actual CLI implementation
+require('../js/cli.js');

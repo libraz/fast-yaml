@@ -1,0 +1,14 @@
+# テスト用YAMLファイル
+string: Hello, World!
+number: 42
+boolean: true
+null_value: null
+array:
+  - item1
+  - item2
+  - item3
+nested:
+  key1: value1
+  key2: value2
+  deep:
+    deeper: deepest

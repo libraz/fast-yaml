@@ -1,0 +1,59 @@
+{
+  "name": "fast-yaml",
+  "version": "0.1.0",
+  "description": "High-performance YAML parser with js-yaml API compatibility",
+  "main": "js/index.cjs",
+  "module": "js/index.mjs",
+  "types": "js/index.d.ts",
+  "bin": "bin/fast-yaml",
+  "scripts": {
+    "build": "wasm-pack build --target nodejs --out-dir pkg",
+    "build:web": "wasm-pack build --target web --out-dir pkg-web",
+    "test": "jest",
+    "test:rust": "cargo test",
+    "test:all": "npm run test && npm run test:rust",
+    "lint": "eslint js --ext .js,.mjs",
+    "format": "prettier --write \"js/**/*.{js,mjs}\"",
+    "format:rust": "cargo fmt",
+    "prepare": "npm run build",
+    "update:yaml-test-suite": "./scripts/update-yaml-test-suite.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/libraz/fast-yaml.git"
+  },
+  "keywords": [
+    "yaml",
+    "parser",
+    "wasm",
+    "rust",
+    "js-yaml",
+    "performance"
+  ],
+  "author": "libraz <libraz@libraz.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/libraz/fast-yaml/issues"
+  },
+  "homepage": "https://github.com/libraz/fast-yaml#readme",
+  "files": [
+    "pkg/**/*",
+    "js/**/*",
+    "bin/**/*",
+    "README.md",
+    "LICENSE"
+  ],
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "eslint": "^9.26.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.31.0",
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0",
+    "prettier": "^3.5.3",
+    "wasm-pack": "^0.13.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

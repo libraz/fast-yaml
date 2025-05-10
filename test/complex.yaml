@@ -1,0 +1,31 @@
+# Complex YAML file for YAMLPath testing
+version: 1.0
+services:
+  - name: service1
+    port: 8080
+    enabled: true
+    config:
+      timeout: 30
+      retries: 3
+  - name: service2
+    port: 8081
+    enabled: false
+    config:
+      timeout: 60
+      retries: 5
+  - name: service3
+    port: 8082
+    enabled: true
+    config:
+      timeout: 45
+      retries: 4
+environments:
+  dev:
+    url: https://dev.example.com
+    debug: true
+  staging:
+    url: https://staging.example.com
+    debug: true
+  prod:
+    url: https://prod.example.com
+    debug: false

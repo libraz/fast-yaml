@@ -1,0 +1,3 @@
+# WebAssembly target configuration
+[target.wasm32-unknown-unknown]
+rustflags = []

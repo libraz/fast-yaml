@@ -1,0 +1,57 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build WASM",
+      "type": "shell",
+      "command": "wasm-pack build --target nodejs --out-dir pkg",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build Web WASM",
+      "type": "shell",
+      "command": "wasm-pack build --target web --out-dir pkg-web",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test Rust",
+      "type": "shell",
+      "command": "cargo test",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "Test JS",
+      "type": "shell",
+      "command": "npm test",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint JS",
+      "type": "shell",
+      "command": "npm run lint",
+      "problemMatcher": ["$eslint-stylish"]
+    },
+    {
+      "label": "Format JS",
+      "type": "shell",
+      "command": "npm run format",
+      "problemMatcher": []
+    },
+    {
+      "label": "Format Rust",
+      "type": "shell",
+      "command": "cargo fmt",
+      "problemMatcher": []
+    }
+  ]
+}
