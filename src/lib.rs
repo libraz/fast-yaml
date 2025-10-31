@@ -4,7 +4,6 @@
 //! but uses the high-performance yaml-rust2 Rust library under the hood.
 
 use wasm_bindgen::prelude::*;
-use web_sys::console;
 
 mod parse;
 mod validate;
@@ -28,7 +27,4 @@ pub fn version() -> String {
 pub fn init() {
     #[cfg(feature = "console_error_panic_hook")]
     console_error_panic_hook::set_once();
-
-    // Log initialization
-    console::log_1(&"fast-yaml initialized".into());
 }

@@ -27,6 +27,10 @@ example/benchmark/results.json
 /test/examples/
 /test-results/
 .nyc_output
+# Benchmark data
+/test/bench/data/
+/test/bench/results.json
+/test/bench/scripts/
 # YAML Test Suite - ignore specific directories but keep the test files
 /test/yaml-test-suite/.git/
 /test/yaml-test-suite/bin/

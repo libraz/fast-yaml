@@ -71,7 +71,7 @@ function createBenchmarkScripts() {
   const fastYamlScript = path.join(scriptsDir, 'bench-fast-yaml.js');
   fs.writeFileSync(fastYamlScript, `
 const fs = require('fs');
-const fastYaml = require('../../js/index.cjs');
+const fastYaml = require('../../../js/index.cjs');
 
 const file = process.argv[2];
 const yaml = fs.readFileSync(file, 'utf8');
