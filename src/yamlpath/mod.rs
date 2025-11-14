@@ -3,12 +3,12 @@
 //! This module provides functionality for querying YAML documents using a path syntax
 //! similar to JSONPath.
 
-mod types;
-mod parser;
 mod evaluator;
+mod parser;
+mod types;
 
-use wasm_bindgen::prelude::*;
 use js_sys::Array;
+use wasm_bindgen::prelude::*;
 use yaml_rust2::YamlLoader;
 
 use crate::parse::yaml_to_js_value;

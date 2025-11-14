@@ -2,10 +2,10 @@
 //!
 //! This module provides YAML validation functionality for YAML documents.
 
+use js_sys::{Array, Boolean, JsString, Object, Reflect, JSON};
+use serde_json::Value as JsonValue;
 use wasm_bindgen::prelude::*;
-use js_sys::{Object, Boolean, Array, Reflect, JsString, JSON};
-use serde_json::{Value as JsonValue};
-use yaml_rust2::{YamlLoader};
+use yaml_rust2::YamlLoader;
 
 /// Validate a YAML document against a JSON Schema
 ///
@@ -31,7 +31,10 @@ pub fn validate(yaml: &str, schema: &JsValue) -> Result<JsValue, JsValue> {
     let _json_value = match yaml_to_json(yaml_value) {
         Ok(value) => value,
         Err(e) => {
-            return Err(JsValue::from_str(&format!("YAML to JSON conversion error: {}", e)));
+            return Err(JsValue::from_str(&format!(
+                "YAML to JSON conversion error: {}",
+                e
+            )));
         }
     };
 
@@ -64,9 +67,13 @@ fn yaml_to_json(yaml: &yaml_rust2::Yaml) -> Result<JsonValue, String> {
         yaml_rust2::Yaml::Boolean(b) => Ok(JsonValue::Bool(*b)),
         yaml_rust2::Yaml::Integer(i) => Ok(JsonValue::Number(serde_json::Number::from(*i))),
         yaml_rust2::Yaml::Real(s) => {
-            let f = s.parse::<f64>().map_err(|e| format!("Failed to parse real: {}", e))?;
-            Ok(JsonValue::Number(serde_json::Number::from_f64(f).ok_or_else(|| "Invalid float".to_string())?))
-        },
+            let f = s
+                .parse::<f64>()
+                .map_err(|e| format!("Failed to parse real: {}", e))?;
+            Ok(JsonValue::Number(
+                serde_json::Number::from_f64(f).ok_or_else(|| "Invalid float".to_string())?,
+            ))
+        }
         yaml_rust2::Yaml::String(s) => Ok(JsonValue::String(s.clone())),
         yaml_rust2::Yaml::Array(arr) => {
             let mut json_arr = Vec::new();
@@ -74,7 +81,7 @@ fn yaml_to_json(yaml: &yaml_rust2::Yaml) -> Result<JsonValue, String> {
                 json_arr.push(yaml_to_json(item)?);
             }
             Ok(JsonValue::Array(json_arr))
-        },
+        }
         yaml_rust2::Yaml::Hash(hash) => {
             let mut map = serde_json::Map::new();
             for (k, v) in hash {
@@ -85,7 +92,7 @@ fn yaml_to_json(yaml: &yaml_rust2::Yaml) -> Result<JsonValue, String> {
                 map.insert(key, yaml_to_json(v)?);
             }
             Ok(JsonValue::Object(map))
-        },
+        }
         yaml_rust2::Yaml::Alias(_) => Err("Aliases are not supported".to_string()),
         yaml_rust2::Yaml::BadValue => Err("Bad YAML value".to_string()),
     }

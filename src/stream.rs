@@ -2,8 +2,8 @@
 //!
 //! This module provides streaming parsing capabilities for large YAML documents.
 
-use wasm_bindgen::prelude::*;
 use js_sys::{Function, Object};
+use wasm_bindgen::prelude::*;
 
 /// Parse a YAML document in a streaming fashion
 ///
@@ -12,7 +12,11 @@ use js_sys::{Function, Object};
 /// @param {Object} options - Parsing options
 /// @returns {Promise} - Promise that resolves when parsing is complete
 #[wasm_bindgen]
-pub fn parse_stream(_yaml: &str, callback: &Function, _options: &JsValue) -> Result<JsValue, JsValue> {
+pub fn parse_stream(
+    _yaml: &str,
+    callback: &Function,
+    _options: &JsValue,
+) -> Result<JsValue, JsValue> {
     // For now, we'll implement a simple skeleton that just calls the callback once
     // This will be replaced with actual streaming logic
 

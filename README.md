@@ -2,6 +2,10 @@
 
 A YAML parser with js-yaml API compatibility, powered by Rust and WebAssembly.
 
+Originally codenamed "fast" with the ambition of outpacing the JS implementation, the first real-world benchmarks revealed the bittersweet twist: it's actually slower than js-yaml.
+
+Given that result, the package never made it to npm—think of this repository as a reference impl or playground rather than something to install from the registry.
+
 ## Overview
 
 fast-yaml is a library that wraps the Rust YAML parser (yaml-rust2) in WebAssembly and distributes it via npm, providing a drop-in replacement for js-yaml.

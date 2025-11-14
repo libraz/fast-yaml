@@ -19,7 +19,7 @@ let wasmModule = null;
 async function getWasmModule() {
   if (wasmModule === null) {
     // Dynamic import for ESM - this allows lazy loading
-    wasmModule = await import('../pkg/fast_yaml.js');
+    wasmModule = await import('../pkg/fast_yaml.js'); // eslint-disable-line import/extensions
   }
   return wasmModule;
 }
@@ -64,7 +64,7 @@ export class YAMLException extends Error {
    * @returns {string} String representation of the error
    */
   toString() {
-    let result = this.name + ': ';
+    let result = `${this.name}: `;
 
     if (this.reason) {
       result += this.reason;
@@ -108,12 +108,12 @@ function handleYamlError(error) {
  * @returns {Object} Parsed JavaScript object
  * @throws {YAMLException} If the YAML string is invalid
  */
-export async function parseYAML(input, options = {}) {
+export async function parseYAML(input, _options = {}) {
   try {
     const module = await getWasmModule();
     return module.parse(input);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -124,12 +124,12 @@ export async function parseYAML(input, options = {}) {
  * @param {Object} [options] - Parsing options
  * @returns {Array} Array of parsed JavaScript objects
  */
-export async function parseAllYAML(input, options = {}) {
+export async function parseAllYAML(input, _options = {}) {
   try {
     const module = await getWasmModule();
     return module.parse_all(input);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -141,12 +141,12 @@ export async function parseAllYAML(input, options = {}) {
  * @returns {Object} Parsed JavaScript object
  * @throws {YAMLException} If the YAML string is invalid
  */
-export async function loadYAML(input, options = {}) {
+export async function loadYAML(input, _options = {}) {
   try {
     const module = await getWasmModule();
     return module.load(input);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -157,12 +157,12 @@ export async function loadYAML(input, options = {}) {
  * @param {Object} [options] - Parsing options
  * @returns {Array} Array of parsed JavaScript objects
  */
-export async function loadAllYAML(input, options = {}) {
+export async function loadAllYAML(input, _options = {}) {
   try {
     const module = await getWasmModule();
     return module.load_all(input);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -178,7 +178,7 @@ export async function validateYAML(yaml, schema) {
     const module = await getWasmModule();
     return module.validate(yaml, schema);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -194,7 +194,7 @@ export async function queryYAML(yaml, path) {
     const module = await getWasmModule();
     return module.query(yaml, path);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 
@@ -211,7 +211,7 @@ export async function parseStreamYAML(yaml, callback, options = {}) {
     const module = await getWasmModule();
     return module.parse_stream(yaml, callback, options);
   } catch (error) {
-    handleYamlError(error);
+    return handleYamlError(error);
   }
 }
 

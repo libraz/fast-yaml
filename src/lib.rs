@@ -6,15 +6,15 @@
 use wasm_bindgen::prelude::*;
 
 mod parse;
+mod stream;
 mod validate;
 mod yamlpath;
-mod stream;
 
 // Re-export the main functions
-pub use parse::{parse, parse_all, load, load_all, loadAll};
+pub use parse::{load, loadAll, load_all, parse, parse_all};
+pub use stream::parse_stream;
 pub use validate::validate;
 pub use yamlpath::query;
-pub use stream::parse_stream;
 
 /// Version information
 #[wasm_bindgen]

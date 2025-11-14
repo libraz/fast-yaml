@@ -2,6 +2,10 @@
 
 js-yaml API互換のYAMLパーサー、RustとWebAssemblyを活用。
 
+Rust×Wasmでjs製ライブラリを置き換えるべく「fast」を名乗って開発したものの、いざ蓋を開けたら本家より遅かった――というオチも一緒にお楽しみください。
+
+そのためnpm公開は見送り、このリポジトリは実験リファレンス的な位置づけで維持しています。
+
 ## 概要
 
 fast-yamlは、Rust製YAMLパーサー（yaml-rust2）をWebAssembly化し、npm経由で配布することでjs-yamlを安全に置換するライブラリです。

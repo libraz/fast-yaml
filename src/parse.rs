@@ -2,10 +2,10 @@
 //!
 //! This module provides the core YAML parsing functions that are API-compatible with js-yaml.
 
-use wasm_bindgen::prelude::*;
-use js_sys::{Array, Object, Boolean, Number, JsString};
-use yaml_rust2::{Yaml, YamlLoader};
+use js_sys::{Array, Boolean, JsString, Number, Object};
 use std::fmt::Write as FmtWrite;
+use wasm_bindgen::prelude::*;
+use yaml_rust2::{Yaml, YamlLoader};
 
 /// Parse a YAML string into a JavaScript object
 ///
@@ -17,8 +17,12 @@ pub fn parse(input: &str) -> Result<JsValue, JsValue> {
     let docs = match YamlLoader::load_from_str(input) {
         Ok(docs) => docs,
         Err(e) => {
-            let error_msg = format!("YAML parsing error: {} at line {}, column {}",
-                e.info(), e.marker().line(), e.marker().col() + 1);
+            let error_msg = format!(
+                "YAML parsing error: {} at line {}, column {}",
+                e.info(),
+                e.marker().line(),
+                e.marker().col() + 1
+            );
             return Err(JsValue::from_str(&error_msg));
         }
     };
@@ -28,12 +32,10 @@ pub fn parse(input: &str) -> Result<JsValue, JsValue> {
     }
 
     // Convert to JSON string (single allocation)
-    let json_string = yaml_to_json_string(&docs[0])
-        .map_err(|e| JsValue::from_str(&e))?;
+    let json_string = yaml_to_json_string(&docs[0]).map_err(|e| JsValue::from_str(&e))?;
 
     // Parse JSON string to JsValue (single WASM boundary crossing)
-    js_sys::JSON::parse(&json_string)
-        .map_err(|_| JsValue::from_str("Failed to parse JSON"))
+    js_sys::JSON::parse(&json_string).map_err(|_| JsValue::from_str("Failed to parse JSON"))
 }
 
 /// Parse all YAML documents in a string into an array of JavaScript objects
@@ -42,16 +44,19 @@ pub fn parse_all(input: &str) -> Result<Array, JsValue> {
     let docs = match YamlLoader::load_from_str(input) {
         Ok(docs) => docs,
         Err(e) => {
-            let error_msg = format!("YAML parsing error: {} at line {}, column {}",
-                e.info(), e.marker().line(), e.marker().col() + 1);
+            let error_msg = format!(
+                "YAML parsing error: {} at line {}, column {}",
+                e.info(),
+                e.marker().line(),
+                e.marker().col() + 1
+            );
             return Err(JsValue::from_str(&error_msg));
         }
     };
 
     let result = Array::new();
     for doc in docs {
-        let json_string = yaml_to_json_string(&doc)
-            .map_err(|e| JsValue::from_str(&e))?;
+        let json_string = yaml_to_json_string(&doc).map_err(|e| JsValue::from_str(&e))?;
         let js_value = js_sys::JSON::parse(&json_string)
             .map_err(|_| JsValue::from_str("Failed to parse JSON"))?;
         result.push(&js_value);
@@ -90,17 +95,15 @@ fn write_yaml_as_json(yaml: &Yaml, output: &mut String) -> Result<(), String> {
         Yaml::Null => output.push_str("null"),
         Yaml::Boolean(b) => {
             output.push_str(if *b { "true" } else { "false" });
-        },
+        }
         Yaml::Integer(i) => {
             write!(output, "{}", i).map_err(|e| e.to_string())?;
-        },
-        Yaml::Real(s) => {
-            match s.parse::<f64>() {
-                Ok(f) => {
-                    write!(output, "{}", f).map_err(|e| e.to_string())?;
-                },
-                Err(_) => return Err(format!("Invalid float: {}", s)),
+        }
+        Yaml::Real(s) => match s.parse::<f64>() {
+            Ok(f) => {
+                write!(output, "{}", f).map_err(|e| e.to_string())?;
             }
+            Err(_) => return Err(format!("Invalid float: {}", s)),
         },
         Yaml::String(s) => {
             output.push('"');
@@ -115,12 +118,12 @@ fn write_yaml_as_json(yaml: &Yaml, output: &mut String) -> Result<(), String> {
                     '\x0C' => output.push_str("\\f"),
                     c if c.is_control() => {
                         write!(output, "\\u{:04x}", c as u32).map_err(|e| e.to_string())?;
-                    },
+                    }
                     c => output.push(c),
                 }
             }
             output.push('"');
-        },
+        }
         Yaml::Array(arr) => {
             output.push('[');
             for (i, item) in arr.iter().enumerate() {
@@ -130,7 +133,7 @@ fn write_yaml_as_json(yaml: &Yaml, output: &mut String) -> Result<(), String> {
                 write_yaml_as_json(item, output)?;
             }
             output.push(']');
-        },
+        }
         Yaml::Hash(hash) => {
             output.push('{');
             let mut first = true;
@@ -155,9 +158,9 @@ fn write_yaml_as_json(yaml: &Yaml, output: &mut String) -> Result<(), String> {
                             }
                         }
                         output.push('"');
-                    },
+                    }
                     _ => {
-                        write!(output, "\"{}\"", format!("{:?}", key)).map_err(|e| e.to_string())?;
+                        write!(output, "\"{key:?}\"").map_err(|e| e.to_string())?;
                     }
                 }
 
@@ -165,7 +168,7 @@ fn write_yaml_as_json(yaml: &Yaml, output: &mut String) -> Result<(), String> {
                 write_yaml_as_json(value, output)?;
             }
             output.push('}');
-        },
+        }
         Yaml::Alias(_) => return Err("YAML aliases are not supported".to_string()),
         Yaml::BadValue => return Err("Invalid YAML value".to_string()),
     }
@@ -178,11 +181,9 @@ pub(crate) fn yaml_to_js_value(yaml: &Yaml) -> Result<JsValue, JsValue> {
         Yaml::Null => Ok(JsValue::NULL),
         Yaml::Boolean(b) => Ok(Boolean::from(*b).into()),
         Yaml::Integer(i) => Ok(Number::from(*i as f64).into()),
-        Yaml::Real(s) => {
-            match s.parse::<f64>() {
-                Ok(f) => Ok(Number::from(f).into()),
-                Err(_) => Err(JsValue::from_str(&format!("Invalid float: {}", s))),
-            }
+        Yaml::Real(s) => match s.parse::<f64>() {
+            Ok(f) => Ok(Number::from(f).into()),
+            Err(_) => Err(JsValue::from_str(&format!("Invalid float: {}", s))),
         },
         Yaml::String(s) => Ok(JsString::from(s.as_str()).into()),
         Yaml::Array(arr) => {
@@ -191,20 +192,20 @@ pub(crate) fn yaml_to_js_value(yaml: &Yaml) -> Result<JsValue, JsValue> {
                 js_array.set(i as u32, yaml_to_js_value(item)?);
             }
             Ok(js_array.into())
-        },
+        }
         Yaml::Hash(hash) => {
             let js_obj = Object::new();
             for (key, value) in hash {
                 let key_str = match key {
                     Yaml::String(s) => s.as_str(),
-                    _ => &format!("{:?}", key)
+                    _ => &format!("{:?}", key),
                 };
                 let js_value = yaml_to_js_value(value)?;
                 js_sys::Reflect::set(&js_obj, &JsString::from(key_str).into(), &js_value)
                     .map_err(|_| JsValue::from_str("Failed to set property"))?;
             }
             Ok(js_obj.into())
-        },
+        }
         Yaml::Alias(_) => Err(JsValue::from_str("YAML aliases are not supported")),
         Yaml::BadValue => Err(JsValue::from_str("Invalid YAML value")),
     }

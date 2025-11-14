@@ -7,7 +7,6 @@
  */
 
 const fs = require('fs');
-const path = require('path');
 const fastYaml = require('./index.cjs');
 
 // Parse command-line arguments
@@ -64,6 +63,7 @@ function readFile(filePath) {
   } catch (error) {
     console.error(`Error reading file: ${error.message}`);
     process.exit(1);
+    return undefined;
   }
 }
 

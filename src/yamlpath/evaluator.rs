@@ -48,7 +48,10 @@ pub fn evaluate_path<'a>(yaml: &'a Yaml, path: &PathExpr) -> Vec<&'a Yaml> {
         }
         PathExpr::Filter(filter) => {
             if let Yaml::Array(array) = yaml {
-                array.iter().filter(|item| evaluate_filter(item, filter)).collect()
+                array
+                    .iter()
+                    .filter(|item| evaluate_filter(item, filter))
+                    .collect()
             } else {
                 vec![]
             }
@@ -109,11 +112,7 @@ pub fn evaluate_filter(yaml: &Yaml, filter: &FilterExpr) -> bool {
             let results = evaluate_path(yaml, path);
             results.iter().any(|result| *result < value)
         }
-        FilterExpr::And(left, right) => {
-            evaluate_filter(yaml, left) && evaluate_filter(yaml, right)
-        }
-        FilterExpr::Or(left, right) => {
-            evaluate_filter(yaml, left) || evaluate_filter(yaml, right)
-        }
+        FilterExpr::And(left, right) => evaluate_filter(yaml, left) && evaluate_filter(yaml, right),
+        FilterExpr::Or(left, right) => evaluate_filter(yaml, left) || evaluate_filter(yaml, right),
     }
 }

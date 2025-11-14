@@ -2,8 +2,8 @@
 //!
 //! This module contains the parser for YAMLPath expressions.
 
-use std::str::Chars;
 use std::iter::Peekable;
+use std::str::Chars;
 
 use yaml_rust2::Yaml;
 
@@ -52,10 +52,7 @@ pub fn parse_path_segment(chars: &mut Peekable<Chars>) -> Result<PathExpr, Strin
                 if let Some(c) = chars.peek() {
                     if *c == '.' || *c == '[' {
                         let next_segment = parse_path_segment(chars)?;
-                        return Ok(PathExpr::Sequence(vec![
-                            PathExpr::Wildcard,
-                            next_segment,
-                        ]));
+                        return Ok(PathExpr::Sequence(vec![PathExpr::Wildcard, next_segment]));
                     }
                 }
 
@@ -91,10 +88,7 @@ pub fn parse_path_segment(chars: &mut Peekable<Chars>) -> Result<PathExpr, Strin
                     if let Some(c) = chars.peek() {
                         if *c == '.' || *c == '[' {
                             let next_segment = parse_path_segment(chars)?;
-                            return Ok(PathExpr::Sequence(vec![
-                                PathExpr::Wildcard,
-                                next_segment,
-                            ]));
+                            return Ok(PathExpr::Sequence(vec![PathExpr::Wildcard, next_segment]));
                         }
                     }
 
@@ -122,7 +116,7 @@ pub fn parse_path_segment(chars: &mut Peekable<Chars>) -> Result<PathExpr, Strin
 
                     Ok(PathExpr::Filter(Box::new(filter)))
                 }
-                Some(c) if c.is_digit(10) => {
+                Some(c) if c.is_ascii_digit() => {
                     let index = parse_number(chars)?;
                     expect_char(chars, ']')?;
 
@@ -162,7 +156,13 @@ pub fn parse_filter_expression(chars: &mut Peekable<Chars>) -> Result<FilterExpr
 
             // Expect a second character
             if chars.peek() != Some(&op_char) {
-                return Err(format!("Expected '{}{}', got '{}{}'", op_char, op_char, op_char, chars.peek().unwrap_or(&' ')));
+                return Err(format!(
+                    "Expected '{}{}', got '{}{}'",
+                    op_char,
+                    op_char,
+                    op_char,
+                    chars.peek().unwrap_or(&' ')
+                ));
             }
 
             chars.next(); // Consume second character
@@ -243,7 +243,7 @@ fn parse_number(chars: &mut Peekable<Chars>) -> Result<usize, String> {
     let mut number = String::new();
 
     while let Some(&c) = chars.peek() {
-        if c.is_digit(10) {
+        if c.is_ascii_digit() {
             number.push(c);
             chars.next();
         } else {
@@ -251,7 +251,9 @@ fn parse_number(chars: &mut Peekable<Chars>) -> Result<usize, String> {
         }
     }
 
-    number.parse::<usize>().map_err(|_| "Invalid number".to_string())
+    number
+        .parse::<usize>()
+        .map_err(|_| "Invalid number".to_string())
 }
 
 /// Parse an operator
@@ -267,7 +269,9 @@ fn parse_operator(chars: &mut Peekable<Chars>) -> Result<Operator, String> {
             chars.next();
 
             // Handle double-character operators
-            if (c == '=' || c == '!' || c == '<' || c == '>' || c == '&' || c == '|') && chars.peek() == Some(&c) {
+            if (c == '=' || c == '!' || c == '<' || c == '>' || c == '&' || c == '|')
+                && chars.peek() == Some(&c)
+            {
                 op_str.push(c);
                 chars.next();
             }
@@ -310,7 +314,11 @@ fn parse_value(chars: &mut Peekable<Chars>) -> Result<Yaml, String> {
         }
         Some('t') => {
             // Parse "true"
-            if chars.next() == Some('t') && chars.next() == Some('r') && chars.next() == Some('u') && chars.next() == Some('e') {
+            if chars.next() == Some('t')
+                && chars.next() == Some('r')
+                && chars.next() == Some('u')
+                && chars.next() == Some('e')
+            {
                 Ok(Yaml::Boolean(true))
             } else {
                 Err("Expected 'true'".to_string())
@@ -318,7 +326,12 @@ fn parse_value(chars: &mut Peekable<Chars>) -> Result<Yaml, String> {
         }
         Some('f') => {
             // Parse "false"
-            if chars.next() == Some('f') && chars.next() == Some('a') && chars.next() == Some('l') && chars.next() == Some('s') && chars.next() == Some('e') {
+            if chars.next() == Some('f')
+                && chars.next() == Some('a')
+                && chars.next() == Some('l')
+                && chars.next() == Some('s')
+                && chars.next() == Some('e')
+            {
                 Ok(Yaml::Boolean(false))
             } else {
                 Err("Expected 'false'".to_string())
@@ -326,13 +339,17 @@ fn parse_value(chars: &mut Peekable<Chars>) -> Result<Yaml, String> {
         }
         Some('n') => {
             // Parse "null"
-            if chars.next() == Some('n') && chars.next() == Some('u') && chars.next() == Some('l') && chars.next() == Some('l') {
+            if chars.next() == Some('n')
+                && chars.next() == Some('u')
+                && chars.next() == Some('l')
+                && chars.next() == Some('l')
+            {
                 Ok(Yaml::Null)
             } else {
                 Err("Expected 'null'".to_string())
             }
         }
-        Some(c) if c.is_digit(10) || *c == '-' => {
+        Some(c) if c.is_ascii_digit() || *c == '-' => {
             let mut number = String::new();
 
             if *c == '-' {
@@ -341,7 +358,7 @@ fn parse_value(chars: &mut Peekable<Chars>) -> Result<Yaml, String> {
             }
 
             while let Some(&c) = chars.peek() {
-                if c.is_digit(10) || c == '.' {
+                if c.is_ascii_digit() || c == '.' {
                     number.push(c);
                     chars.next();
                 } else {

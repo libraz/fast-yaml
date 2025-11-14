@@ -35,15 +35,3 @@ lto = true
 [[test]]
 name = "yaml-test-suite"
 harness = false
-
-[[bin]]
-name = "dump_events"
-path = "tools/dump_events.rs"
-
-[[bin]]
-name = "time_parse"
-path = "tools/time_parse.rs"
-
-[[bin]]
-name = "run_bench"
-path = "tools/run_bench.rs"
